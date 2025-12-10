@@ -1,0 +1,30 @@
+body{
+    background-color:seashell;
+    color: blue;
+}
+
+h1{
+    font-size: 36px;
+    color: burlywood;
+    text-align: center;
+}
+
+h2{
+    color: blue
+;
+    text-decoration: underline;
+    font-style: italic;
+    font-weight: bold;
+}
+
+p{
+    font: size 25px;;
+}
+
+.pretty{
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+.redtext{
+    color: red;
+}

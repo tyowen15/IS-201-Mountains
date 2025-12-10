@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ultimate Mountain Survival Guide</title>
+
+<style>
+  /* Combined Color Theme */
+  :root {
+    --sky: #0c1a2b;
+    --rock: #233142;
+    --pine: #2d5a4a;
+    --accent: #f4c95d;
+    --light: #e8f1f2;
+    --sunset: #ffb07c;
+    --gold: #f9d480;
+    --slate: #1b2735;
+    --ice: #e8f6ff;
+  }
+
+  body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: var(--slate);
+    color: var(--ice);
+  }
+
+  /* PARALLAX HEADER */
+  .parallax {
+    height: 55vh;
+    background-image: url('https://images.unsplash.com/photo-1508264165352-258a6d1afd5d?auto=format&fit=crop&w=1600&q=60');
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .parallax h1 {
+    font-size: 3rem;
+    padding: 20px 30px;
+    background: rgba(0,0,0,0.45);
+    border-radius: 14px;
+    text-shadow: 0 5px 15px rgba(0,0,0,0.6);
+    text-align: center;
+  }
+
+  /* CONTENT SECTIONS */
+  .section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px;
+  }
+
+  h2 {
+    color: var(--gold);
+    font-size: 1.3rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  /* SURVIVAL STEP CARDS */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .card {
+    background: rgba(255,255,255,0.06);
+    border-left: 4px solid var(--sunset);
+    border-radius: 14px;
+    padding: 18px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .card img {
+    width: 60px;
+    height: 60px;
+    border-radius: 6px;
+    object-fit: cover;
+  }
+
+  /* LARGE SURVIVAL IMAGES */
+  figure img {
+    width: 100%;
+    border-radius: 12px;
+    margin-top: 15px;
+  }
+
+  figcaption {
+    font-size: 0.9rem;
+    color: #dce9ea;
+    margin-bottom: 20px;
+  }
+
+  /* MAP */
+  #map {
+    width: 100%;
+    height: 350px;
+    border-radius: 16px;
+    border: 2px solid rgba(255,255,255,0.2);
+  }
+
+  /* VIDEO LINK LIST */
+  .video-links a {
+    display: block;
+    margin: 6px 0;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 1rem;
+  }
+
+  .video-links a:hover { text-decoration: underline; }
+
+  footer {
+    text-align: center;
+    padding: 22px;
+    color: #bcd2dd;
+    font-size: 0.9rem;
+  }
+
+</style>
+</head>
+<body>
+
+<!-- PARALLAX TITLE -->
+<div class="parallax">
+  <h1>The Ultimate Guide to Surviving a Night in the Mountains</h1>
+</div>
+
+<!-- STEP-BY-STEP SURVIVAL SECTION -->
+<div class="section">
+  <h2>Step-by-Step Survival Guide</h2>
+  <p>Each step includes an image and guidance on how to perform it effectively while stranded in mountain terrain.</p>
+
+  <div class="cards">
+
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=300&q=60">
+      <div><strong>1. Assess injuries & first aid.</strong><br>Stop bleeding, stabilize injuries, and treat early hypothermia.</div>
+    </div>
+
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1508264165352-258a6d1afd5d?auto=format&fit=crop&w=300&q=60">
+      <div><strong>2. Create or find shelter.</strong><br>Use tents, tarps, rocks, or trees to block wind and preserve heat.</div>
+    </div>
+
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=300&q=60">
+      <div><strong>3. Stay dry & insulate.</strong><br>Swap wet layers for dry ones and add insulation to conserve heat.</div>
+    </div>
+
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=300&q=60">
+      <div><strong>4. Build a heat source.</strong><br>Make a safe fire if possible. Never build fires inside enclosed shelters.</div>
+    </div>
+
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1519659528534-7fd733a832a5?auto=format&fit=crop&w=300&q=60">
+      <div><strong>5. Eat warm, high-energy foods.</strong><br>Your body burns calories fast in the cold—fuel it.</div>
+    </div>
+
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1542044801-41b4d11a8883?auto=format&fit=crop&w=300&q=60">
+      <div><strong>6. Signal for rescue.</strong><br>Use whistles, fires, mirrors, or flashlight signals (3 flashes = distress).</div>
+    </div>
+
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1514474959185-1472e3f4d69f?auto=format&fit=crop&w=300&q=60">
+      <div><strong>7. Conserve energy.</strong><br>Move only when necessary. Staying put increases rescue chances.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MOUNTAIN PHOTOS -->
+<div class="section">
+  <h2>Mountain Survival Visuals</h2>
+
+  <figure>
+    <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1400&q=60">
+    <figcaption>Choosing a well-protected spot for shelter is key to safety.</figcaption>
+  </figure>
+
+  <figure>
+    <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=60">
+    <figcaption>Cold air sinks—avoid low valleys when possible.</figcaption>
+  </figure>
+</div>
+<div class='tableauPlaceholder' id='viz1765214471373' style='position: relative'><noscript><a href='#'><img alt='Starcraft II Player Network ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;St&#47;StarcraftIIPlayerNetwork&#47;StarcraftIIPlayerNetwork&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='' /><param name='name' value='StarcraftIIPlayerNetwork&#47;StarcraftIIPlayerNetwork' /><param name='tabs' value='no' /><param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;St&#47;StarcraftIIPlayerNetwork&#47;StarcraftIIPlayerNetwork&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /><param name='language' value='en-US' /><param name='filter' value='_gl=1*1wu8mew*_ga*MzcwNjE5NTg4LjE3NjIxODgwNjg.*_ga_8YLN0SNXVS*czE3NjUyMTQzOTAkbzEwJGcxJHQxNzY1MjE0NDMzJGo2MCRsMCRoMA..*_gcl_au*MTIzNzE3MTE0Mi4xNzYyMTg4MDY0' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1765214471373');                    var vizElement = divElement.getElementsByTagName('object')[0];                    vizElement.style.width='1800px';vizElement.style.height='1027px';                    var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>
+
+<!-- INTERACTIVE MAP -->
+<div class="section">
+  <h2>Mountain Terrain Map</h2>
+  <p>Explore this interactive map to understand elevation, terrain features, and escape routes.</p>
+  <iframe id="map" src="https://www.openstreetmap.org/export/embed.html?bbox=-112.7%2C40.1%2C-110.9%2C41.0&layer=mapnik" loading="lazy"></iframe>
+</div>
+
+<br>
+<iframe src="https://www.nationalgeographic.com/science/article/mountains" width="1400" height="500"></iframe>
+
+<!-- SURVIVAL VIDEOS -->
+<div class="section">
+  <h2>Helpful Survival Videos</h2>
+  <div class="video-links">
+    <a href="https://www.youtube.com/watch?v=yslJxOlT0Wk" target="_blank">Build an Emergency Shelter</a>
+    <a href="https://www.youtube.com/watch?v=IX9U6jv2Jx4" target="_blank">Stay Warm Overnight</a>
+    <
+
+<footer>
+  © 2025 Mountain Survival Guide — Stay safe. Be prepared.
+</footer>
+
+</body>
+</html>

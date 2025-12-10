@@ -1,0 +1,12 @@
+body{ background-color: aqua;}
+h1{
+    text-align: center;
+}
+h2{text-decoration: underline;
+color: navy;
+text-align: center;
+}
+h3{ color: darkred;
+    font-family: 'Courier New', Courier, monospace;
+
+}

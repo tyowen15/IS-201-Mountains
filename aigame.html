@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Hangman — Single Page Game (Wider Left Panel)</title>
+<style>
+  :root{
+    --bg:#f6f7fb;
+    --panel:#ffffff;
+    --accent:#1f6feb;
+    --muted:#6b7280;
+    --danger:#ef4444;
+    --good:#16a34a;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,#eef2ff, #f6f7fb);color:#0f172a}
+  .wrap{
+    max-width:1100px;
+    margin:28px auto;
+    padding:20px;
+    display:grid;
+    gap:20px;
+    /* LEFT panel widened from 360px -> 440px */
+    grid-template-columns: 440px 1fr;
+    align-items:start;
+  }
+
+  /* Left panel: gallows and stats */
+  .card{
+    background:var(--panel);
+    border-radius:14px;
+    padding:18px;
+    box-shadow: 0 6px 18px rgba(15,23,42,0.06);
+  }
+  .gallows{
+    width:100%;
+    height:340px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  /* SVG hangman parts will be toggled with .visible */
+  svg{width:340px;height:300px;overflow:visible}
+  .part{stroke:#111827; stroke-width:6; stroke-linecap:round; stroke-linejoin:round; fill:none; opacity:0; transition:opacity .18s linear, transform .18s ease; transform-origin:center;}
+  .part.visible{opacity:1; transform: translateY(0);}
+
+  /* Word display */
+  .word{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:12px;
+    font-size:28px;
+    letter-spacing:6px;
+    justify-content:center;
+  }
+  .letter{
+    box-sizing: border-box;
+    min-width: 38px;    /* increased to ensure tall/wide glyphs fit */
+    height: 44px;       /* fixed height */
+    line-height: 44px;  /* vertically centers letter */
+    border-bottom:3px solid #e6e9ef;
+    text-align:center;
+    padding: 0 6px;     /* horizontal padding for very wide glyphs */
+    font-weight:700;
+    font-size:28px;
+    display:inline-block;
+    overflow:hidden;    /* hide any accidental overflow */
+    white-space:nowrap;
+  }
+
+  /* Keyboard */
+  .keyboard{display:grid;gap:8px;grid-template-columns:repeat(13,1fr); margin-top:6px;}
+  .key{
+    background:#f3f4f6;
+    border-radius:8px;
+    padding:8px 6px;
+    text-align:center;
+    cursor:pointer;
+    user-select:none;
+    border:1px solid rgba(15,23,42,0.04);
+    font-weight:700;
+    font-size:14px;
+    box-sizing:border-box;
+  }
+  .key.disabled{opacity:.35; pointer-events:none;}
+  .key.correct{background: #d1fae5; border-color: rgba(16,185,129,0.15); color:var(--good);}
+  .key.wrong{background: #fee2e2; border-color: rgba(239,68,68,0.12); color:var(--danger);}
+
+  /* Controls & messages */
+  .controls{display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap}
+  button.btn{
+    background:var(--accent);
+    color:white;
+    border:none;
+    padding:8px 12px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:700;
+  }
+  button.btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(31,111,235,0.12)}
+  .muted{color:var(--muted);font-size:14px}
+  .status{
+    margin-top:12px;
+    font-weight:700;
+  }
+  .status.win{color:var(--good)}
+  .status.lose{color:var(--danger)}
+
+  /* Right column: info */
+  .right h2{margin:0 0 6px 0}
+  .right p{margin:0 0 12px 0;color:var(--muted)}
+  .hint{background:#fff7ed;padding:12px;border-radius:10px;border:1px solid rgba(245,158,11,0.08);font-weight:600;color:#92400e}
+
+  /* small screens */
+  @media (max-width:980px){
+    .wrap{grid-template-columns:1fr; padding:12px}
+    svg{width:320px;height:280px}
+    .keyboard{grid-template-columns:repeat(10,1fr)}
+    .letter{min-width:34px;height:40px;line-height:40px;font-size:24px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <h1 style="margin:0;font-size:20px">Hangman</h1>
+        <div class="muted" style="margin-top:6px">Guess the word — 6 wrong guesses and the hangman is complete.</div>
+      </div>
+      <div style="text-align:right">
+        <div class="muted">Wrong left</div>
+        <div id="wrongLeft" style="font-weight:900;font-size:20px">6</div>
+      </div>
+    </div>
+
+    <div class="gallows" aria-hidden="true">
+      <!-- Simple gallows + hangman parts (toggleable) -->
+      <svg viewBox="0 0 200 260" role="img" aria-label="Hangman drawing">
+        <!-- Gallows (always visible) -->
+        <line x1="20" y1="240" x2="180" y2="240" stroke="#374151" stroke-width="4" stroke-linecap="round"/>
+        <line x1="40" y1="240" x2="40" y2="30" stroke="#374151" stroke-width="4" stroke-linecap="round"/>
+        <line x1="40" y1="30" x2="120" y2="30" stroke="#374151" stroke-width="4" stroke-linecap="round"/>
+        <line x1="120" y1="30" x2="120" y2="50" stroke="#374151" stroke-width="4" stroke-linecap="round"/>
+        <!-- Head -->
+        <circle id="part-head" class="part" cx="120" cy="76" r="18" />
+        <!-- Body -->
+        <line id="part-body" class="part" x1="120" y1="94" x2="120" y2="154" />
+        <!-- Left arm -->
+        <line id="part-left-arm" class="part" x1="120" y1="106" x2="94" y2="128" />
+        <!-- Right arm -->
+        <line id="part-right-arm" class="part" x1="120" y1="106" x2="146" y2="128" />
+        <!-- Left leg -->
+        <line id="part-left-leg" class="part" x1="120" y1="154" x2="98" y2="192" />
+        <!-- Right leg -->
+        <line id="part-right-leg" class="part" x1="120" y1="154" x2="142" y2="192" />
+      </svg>
+    </div>
+
+    <div class="word" id="wordDisplay" aria-live="polite"></div>
+
+    <div style="margin-top:14px">
+      <div class="muted">Click letters (or type), or try a full word guess:</div>
+      <div class="controls">
+        <input id="guessInput" type="text" placeholder="Type full word & press Guess" style="padding:8px;border-radius:8px;border:1px solid #e6e9ef;min-width:180px"/>
+        <button id="guessWordBtn" class="btn ghost">Guess Word</button>
+        <button id="resetBtn" class="btn">New Word</button>
+      </div>
+    </div>
+
+    <div class="keyboard" id="keyboard" style="margin-top:12px" aria-label="On-screen keyboard"></div>
+
+    <div class="status" id="status" role="status" aria-live="assertive"></div>
+  </div>
+
+  <div class="card right">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <h2 style="margin-bottom:4px">How to play</h2>
+        <p>Guess one letter at a time. Correct letters will show in the word. Wrong letters add a part to the hangman. You have 6 wrong guesses.</p>
+      </div>
+    </div>
+
+    <div style="margin-top:12px">
+      <div class="muted">Category (hint)</div>
+      <div id="category" class="hint" style="margin-top:8px">—</div>
+    </div>
+
+    <div style="margin-top:16px">
+      <h3 style="margin:0 0 8px 0">Options</h3>
+      <p class="muted" style="margin-bottom:12px">You can restart with a new random word anytime. Wrong full-word guesses count as one wrong guess.</p>
+      <button id="revealBtn" class="btn ghost">Reveal Word</button>
+    </div>
+
+    <div style="margin-top:16px">
+      <h3 style="margin:0 0 8px 0">Accessibility</h3>
+      <p class="muted">You can also type letters on your keyboard when the page is focused. Buttons receive focus styles.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  // Word list with categories (feel free to expand)
+  const WORDS = [
+    {w:"MOUNTAIN", cat:"Nature"},
+    {w:"ELEPHANT", cat:"Animal"},
+    {w:"COMPUTER", cat:"Technology"},
+    {w:"JAVASCRIPT", cat:"Technology"},
+    {w:"PIZZA", cat:"Food"},
+    {w:"HANGMAN", cat:"Game"},
+    {w:"GIRAFFE", cat:"Animal"},
+    {w:"ORCHESTRA", cat:"Music"},
+    {w:"VOLCANO", cat:"Nature"},
+    {w:"ASTRONAUT", cat:"Occupation"},
+    {w:"BICYCLE", cat:"Transport"},
+    {w:"SUNFLOWER", cat:"Plant"},
+    {w:"PENGUIN", cat:"Animal"},
+    {w:"LIBRARY", cat:"Place"},
+    {w:"DIAMOND", cat:"Gem"}
+  ];
+
+  const MAX_WRONG = 6;
+  let answer = "";
+  let category = "";
+  let guessed = new Set();
+  let wrongCount = 0;
+  let gameOver = false;
+
+  // DOM refs
+  const wordDisplay = document.getElementById("wordDisplay");
+  const keyboard = document.getElementById("keyboard");
+  const wrongLeftEl = document.getElementById("wrongLeft");
+  const statusEl = document.getElementById("status");
+  const resetBtn = document.getElementById("resetBtn");
+  const revealBtn = document.getElementById("revealBtn");
+  const categoryEl = document.getElementById("category");
+  const guessInput = document.getElementById("guessInput");
+  const guessWordBtn = document.getElementById("guessWordBtn");
+
+  const PART_IDS = ["part-head","part-body","part-left-arm","part-right-arm","part-left-leg","part-right-leg"];
+  function setPartVisible(idx){
+    const el = document.getElementById(PART_IDS[idx]);
+    if(el) el.classList.add("visible");
+  }
+  function resetParts(){
+    PART_IDS.forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.classList.remove("visible");
+    });
+  }
+
+  function pickWord(){
+    const item = WORDS[Math.floor(Math.random()*WORDS.length)];
+    answer = item.w.toUpperCase();
+    category = item.cat;
+  }
+
+  function renderWord(){
+    wordDisplay.innerHTML = "";
+    for(let ch of answer){
+      const span = document.createElement("span");
+      span.className = "letter";
+      if(ch === " "){
+        span.textContent = " ";
+        span.style.borderBottom = "none";
+        span.style.minWidth = "16px";
+      } else {
+        span.textContent = guessed.has(ch) ? ch : "";
+      }
+      wordDisplay.appendChild(span);
+    }
+  }
+
+  function createKeyboard(){
+    keyboard.innerHTML = "";
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    for(let ch of letters){
+      const btn = document.createElement("div");
+      btn.className = "key";
+      btn.tabIndex = 0;
+      btn.textContent = ch;
+      btn.dataset.letter = ch;
+      btn.addEventListener("click", () => handleGuess(ch));
+      btn.addEventListener("keydown", e => {
+        if(e.key === "Enter" || e.key === " ") { e.preventDefault(); handleGuess(ch); }
+      });
+      keyboard.appendChild(btn);
+    }
+  }
+
+  function updateWrongLeft(){
+    wrongLeftEl.textContent = Math.max(0, MAX_WRONG - wrongCount);
+  }
+
+  function setStatus(msg, type){
+    statusEl.textContent = msg;
+    statusEl.className = "status " + (type || "");
+  }
+
+  function handleGuess(letter){
+    if(gameOver) return;
+    if(guessed.has(letter)) return;
+    guessed.add(letter);
+
+    const btn = [...keyboard.children].find(b => b.dataset?.letter === letter);
+    if(answer.includes(letter)){
+      if(btn){ btn.classList.add("correct"); btn.classList.add("disabled"); }
+      // reveal and check win
+      renderWord();
+      if(isWin()){
+        gameOver = true;
+        setStatus("You win! 🎉", "win");
+      } else {
+        setStatus("Nice — keep going!");
+      }
+    } else {
+      if(btn){ btn.classList.add("wrong"); btn.classList.add("disabled"); }
+      wrongCount++;
+      setPartVisible(wrongCount-1);
+      updateWrongLeft();
+      if(wrongCount >= MAX_WRONG){
+        endGame(false);
+      } else {
+        setStatus("Wrong guess. Try again.");
+      }
+    }
+  }
+
+  function isWin(){
+    for(let ch of answer){
+      if(ch === " ") continue;
+      if(!guessed.has(ch)) return false;
+    }
+    return true;
+  }
+
+  function endGame(win){
+    gameOver = true;
+    if(win){
+      setStatus("You win! 🎉", "win");
+    } else {
+      setStatus("You lose — the word was: " + answer, "lose");
+      // reveal all letters
+      for(let ch of answer) guessed.add(ch);
+      renderWord();
+      // reveal remaining parts
+      for(let i=0;i<MAX_WRONG;i++) setPartVisible(i);
+    }
+    // disable keyboard
+    for(const b of [...keyboard.children]) b.classList.add("disabled");
+  }
+
+  function guessFullWord(){
+    if(gameOver) return;
+    const attempt = guessInput.value.trim().toUpperCase();
+    if(!attempt) return;
+    if(attempt === answer){
+      // mark all letters and win
+      for(let ch of answer) guessed.add(ch);
+      renderWord();
+      endGame(true);
+    } else {
+      wrongCount++;
+      setPartVisible(wrongCount-1);
+      updateWrongLeft();
+      setStatus("Wrong word guess.");
+      if(wrongCount >= MAX_WRONG) endGame(false);
+    }
+    guessInput.value = "";
+  }
+
+  // keyboard events (physical)
+  document.addEventListener("keydown", e => {
+    if(gameOver) return;
+    if(e.key.length === 1 && e.key.match(/[a-z]/i)){
+      handleGuess(e.key.toUpperCase());
+    } else if(e.key === "Enter" && guessInput === document.activeElement){
+      guessFullWord();
+    }
+  });
+
+  // UI hooks
+  resetBtn.addEventListener("click", initGame);
+  revealBtn.addEventListener("click", ()=> {
+    if(gameOver) return;
+    setStatus("Revealed: " + answer, "lose");
+    for(let ch of answer) guessed.add(ch);
+    renderWord();
+    endGame(false);
+  });
+  guessWordBtn.addEventListener("click", guessFullWord);
+
+  function initGame(){
+    pickWord();
+    guessed = new Set();
+    wrongCount = 0;
+    gameOver = false;
+    resetParts();
+    createKeyboard();
+    renderWord();
+    updateWrongLeft();
+    categoryEl.textContent = category;
+    setStatus("Good luck! Guess a letter.", "");
+    guessInput.value = "";
+  }
+
+  // Start
+  initGame();
+})();
+</script>
+</body>
+</html>
